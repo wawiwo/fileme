@@ -1,0 +1,24 @@
+#!/bin/bash
+
+fileNAME=$1
+fileID=$2
+
+echo -n $fileNAME > /tmp/name
+echo -n $fileID > /tmp/id
+[ -s /tmp/name ] || echo Missing File NAME
+[ -s /tmp/id ] || echo Missing File ID
+
+
+
+echo "Download Google Drive via fileID on curl"
+echo "File NAME: $fileNAME"
+echo "File ID: $fileID"
+echo "Downloading..."
+
+rm -rf /tmp/cookies.txt
+rm -rf /tmp/name
+rm -rf /tmp/id
+confirmCode=$(curl -skLc /tmp/cookies.txt "https://docs.google.com/uc?export=download&id=$fileID" | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p');
+curl -kLb /tmp/cookies.txt -o $fileNAME "https://docs.google.com/uc?export=download&confirm=$confirmCode&id=$fileID"
+
+echo "Download complete !!!"
